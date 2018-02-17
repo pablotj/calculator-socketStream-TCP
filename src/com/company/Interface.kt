@@ -15,8 +15,9 @@ import javax.swing.SwingConstants.RIGHT
  */
 class Interface : JFrame() {
     private val TITLE = "CALCULATOR"
-    internal var calculo: Array<String>
-    internal var what: Boolean? = false // true-> Operando 1 && false -> Operando 2
+
+    internal var saved: Array<String>
+    internal var operatorPosition: Boolean? = false // true-> Operator 1 && false -> Operator 2
 
     private var result: JLabel? = null
     private var btn0: JButton? = null
@@ -37,8 +38,22 @@ class Interface : JFrame() {
     private var btnPoint: JButton? = null
     private var btnEqual: JButton? = null
 
-    init {
+    companion object {
+        private var client: ClientTCP? = null
+    }
 
+    fun calculate(op: String): String {
+        println(op)
+        client = ClientTCP()
+        return client!!.communication(op)
+    }
+
+    fun operation(): String {
+        return saved[0] + " " + saved[1] + " " + saved[2]
+    }
+
+    init {
+        // Set theme
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel")
         } catch (e: ClassNotFoundException) {
@@ -48,6 +63,7 @@ class Interface : JFrame() {
         }
 
         init()
+
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         setSize(200, 350)
         setLocationRelativeTo(null)
@@ -56,11 +72,11 @@ class Interface : JFrame() {
         isVisible = true
         title = TITLE
 
-        calculo = arrayOf("", "", "")
-        what = false
+        saved = arrayOf("", "", "")
+        operatorPosition = false
     }
 
-    fun init() {
+    private fun init() {
 
         // ---- ROW 0 -->> [result] ----//
         result = JLabel("0.0")
@@ -177,160 +193,75 @@ class Interface : JFrame() {
         override fun actionPerformed(e: ActionEvent) {
 
             val btn = e.actionCommand
-            if ("" != calculo[1]) {
-                what = true
+            if ("" != saved[1]) {
+                operatorPosition = true
             }
-            when (btn) {
-                "AC" -> {
-                    result!!.text = "0.0"
-                    calculo = arrayOf("", "", "")
-                    what = false
+
+            if("0"==btn||"1"==btn||"2"==btn||"3"==btn||"4"==btn||"5"==btn||"6"==btn||"7"==btn||"8"==btn||"9"==btn){
+
+                if (operatorPosition!!) {
+                    saved[2] += btn
+                    result!!.text = saved[2]
+
+                } else {
+                    saved[0] += btn
+                    result!!.text = saved[0]
                 }
 
-                "/" -> {
-                    calculo[1] = btn
-                    what = true
-                    result!!.text = "/"
-                }
+            }else if("/"==btn ||"x"==btn ||"-"==btn ||"+"==btn ) {
 
-                "x" -> {
-                    calculo[1] = btn
-                    what = true
-                    result!!.text = "x"
-                }
+                saved[1] = btn
+                operatorPosition = true
+                result!!.text = btn
 
-                "-" -> {
-                    calculo[1] = btn
-                    what = true
-                    result!!.text = "-"
-                }
+            }else{
 
-                "+" -> {
-                    calculo[1] = btn
-                    what = true
-                    result!!.text = "+"
-                }
-                "," ->
+                when (btn) {
 
-                    if (what!! && !calculo[2].contains(".")) {
-                        calculo[2] += "."
-                        result!!.text = calculo[2]
-                    } else if ((!what!!)!! && !calculo[0].contains(".")) {
-                        calculo[0] += "."
-                        result!!.text = calculo[0]
-                    }
-                "=" -> {
-
-                    if ("" == calculo[0] && "" == calculo[1] && "" == calculo[2]) {
-                        calculo = arrayOf("0.0", "+", "0.0")
-                    } else if ("" != calculo[0] && "" == calculo[1] && "" == calculo[2]) {
-                        calculo = arrayOf(calculo[0], "+", calculo[0])
-                    } else if ("" != calculo[0] && "" != calculo[0] && "" == calculo[2]) {
-                        calculo = arrayOf(calculo[0], calculo[1], calculo[0])
-                    } else if ("" == calculo[0] && "" == calculo[1] && "" != calculo[2]) {
-                        calculo = arrayOf("0.0", "+", calculo[2])
-                    } else if ("" == calculo[0] && "" != calculo[1] && "" != calculo[2]) {
-                        calculo = arrayOf("0.0", calculo[1], calculo[2])
+                    "AC" -> {
+                        result!!.text = "0.0"
+                        saved = arrayOf("", "", "")
+                        operatorPosition = false
                     }
 
+                    "," ->
+                        if (operatorPosition!! && !saved[2].contains(".")) {
+                            saved[2] += "."
+                            result!!.text = saved[2]
 
-                    val total = calcular(operation())
+                        } else if ((!operatorPosition!!)!! && !saved[0].contains(".")) {
+                            saved[0] += "."
+                            result!!.text = saved[0]
+                        }
 
-                    println(total)
-                    result!!.text = total
-                    calculo[0] = total
-                    calculo[2] = ""
-                }
+                    "=" -> {
 
-                "0" -> if (what!!) {
-                    calculo[2] += btn
-                    result!!.text = calculo[2]
-                } else {
-                    calculo[0] += btn
-                    result!!.text = calculo[0]
-                }
-                "1" -> if (what!!) {
-                    calculo[2] += btn
-                    result!!.text = calculo[2]
-                } else {
-                    calculo[0] += btn
-                    result!!.text = calculo[0]
-                }
-                "2" -> if (what!!) {
-                    calculo[2] += btn
-                    result!!.text = calculo[2]
-                } else {
-                    calculo[0] += btn
-                    result!!.text = calculo[0]
-                }
-                "3" -> if (what!!) {
-                    calculo[2] += btn
-                    result!!.text = calculo[2]
-                } else {
-                    calculo[0] += btn
-                    result!!.text = calculo[0]
-                }
-                "4" -> if (what!!) {
-                    calculo[2] += btn
-                    result!!.text = calculo[2]
-                } else {
-                    calculo[0] += btn
-                    result!!.text = calculo[0]
-                }
-                "5" -> if (what!!) {
-                    calculo[2] += btn
-                    result!!.text = calculo[2]
-                } else {
-                    calculo[0] += btn
-                    result!!.text = calculo[0]
-                }
-                "6" -> if (what!!) {
-                    calculo[2] += btn
-                    result!!.text = calculo[2]
-                } else {
-                    calculo[0] += btn
-                    result!!.text = calculo[0]
-                }
-                "7" -> if (what!!) {
-                    calculo[2] += btn
-                    result!!.text = calculo[2]
-                } else {
-                    calculo[0] += btn
-                    result!!.text = calculo[0]
-                }
-                "8" -> if (what!!) {
-                    calculo[2] += btn
-                    result!!.text = calculo[2]
-                } else {
-                    calculo[0] += btn
-                    result!!.text = calculo[0]
-                }
-                "9" -> if (what!!) {
-                    calculo[2] += btn
-                    result!!.text = calculo[2]
-                } else {
-                    calculo[0] += btn
-                    result!!.text = calculo[0]
+                        if ("" == saved[0] && "" == saved[1] && "" == saved[2]) {
+                            saved = arrayOf("0.0", "+", "0.0")
+
+                        } else if ("" != saved[0] && "" == saved[1] && "" == saved[2]) {
+                            saved = arrayOf(saved[0], "+", saved[0])
+
+                        } else if ("" != saved[0] && "" != saved[0] && "" == saved[2]) {
+                            saved = arrayOf(saved[0], saved[1], saved[0])
+
+                        } else if ("" == saved[0] && "" == saved[1] && "" != saved[2]) {
+                            saved = arrayOf("0.0", "+", saved[2])
+
+                        } else if ("" == saved[0] && "" != saved[1] && "" != saved[2]) {
+                            saved = arrayOf("0.0", saved[1], saved[2])
+                        }
+
+                        val total = calculate(operation())
+
+                        println(total)
+                        result!!.text = total
+                        saved[0] = total
+                        saved[2] = ""
+                    }
                 }
             }
-            println(Arrays.toString(calculo))
+            println(Arrays.toString(saved))
         }
-
     }
-
-    fun calcular(op: String): String {
-        client = ClientTCP()
-        println(op.toString())
-        return client!!.communication(op)
-
-    }
-
-    fun operation(): String {
-        return calculo[0] + " " + calculo[1] + " " + calculo[2]
-    }
-
-    companion object {
-        private var client: ClientTCP? = null
-    }
-
 }

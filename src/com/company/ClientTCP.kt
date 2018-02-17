@@ -15,7 +15,7 @@ class ClientTCP {
     private val PORT = 55555
 
     companion object {
-        
+
         private var clientSocket: Socket? = null
         private var adder: InetSocketAddress? = null
         private var entry: InputStream? = null
@@ -36,8 +36,6 @@ class ClientTCP {
     fun communication(operation: String): String {
         connect()
 
-        var result: Array<String>? = null
-
         //The operation is sent to the server
         Companion.exit = Companion.clientSocket!!.getOutputStream()
         Companion.exit!!.write(operation.toByteArray())
@@ -47,7 +45,7 @@ class ClientTCP {
         val resultBytes = ByteArray(25)
         Companion.entry!!.read(resultBytes)
 
-        result = String(resultBytes).split(regex = " ".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
+        val result: Array<String> = String(resultBytes).split(regex = " ".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
 
         close()
         return result[0]
