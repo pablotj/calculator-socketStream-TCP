@@ -1,84 +1,79 @@
 package com.company
 
-
-import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import java.lang.reflect.Array
 import java.net.InetSocketAddress
-import java.net.Socket
-import java.util.Arrays
 import java.net.ServerSocket
-import java.util.ArrayList
 
+/**
+ *
+ * @author Pablo
+ */
 class ServerTCP {
-    private val result: Float = 0.toFloat()
 
+    private val ADDRESS = "localhost"
+    private val PORT = 55555
 
+    companion object {
+        private var entry: InputStream? = null
+        private var exit: OutputStream? = null
+        private var adder: InetSocketAddress? = null
+    }
 
-        private val ADDRES = "localhost"
-        private val PORT = 55555
-        private var addr: InetSocketAddress? = null
-        private var `in`: InputStream? = null
-        private var out: OutputStream? = null
-
-
-
-        fun servir() {
-
+    fun respond() {
+        println("Server started at $ADDRESS on the port $PORT")
             while (true) {
-
-                try {
-
                     ServerSocket().use { serverSocket ->
 
-                        addr = InetSocketAddress(ADDRES, PORT)
-                        serverSocket.bind(addr)
+                        Companion.adder = InetSocketAddress(ADDRESS, PORT)
+                        serverSocket.bind(Companion.adder)
 
                         serverSocket.accept().use { newSocket ->
 
-                            `in` = newSocket.getInputStream()
-                            out = newSocket.getOutputStream()
+                            Companion.entry = newSocket.getInputStream()
+                            Companion.exit = newSocket.getOutputStream()
 
                             val inBytes = ByteArray(25)
-                            `in`!!.read(inBytes)
-                            var mensaje = String(inBytes).split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                            Companion.entry!!.read(inBytes)
+                            var request = String(inBytes)
+                                    .split(" ".toRegex())
+                                    .dropLastWhile {
+                                        it.isEmpty()
+                                    }.toTypedArray()
+                            val number1 = java.lang.Float.parseFloat(request[0])
+                            val symbol = request[1]
+                            val number2 = java.lang.Float.parseFloat(request[2])
 
-                            val numero1 = java.lang.Float.parseFloat(mensaje[0])
-                            val operador = mensaje[1]
-                            val numero2 = java.lang.Float.parseFloat(mensaje[2])
-
-                            when (operador) {
-                                "+" -> out!!.write((sumar(numero1, numero2).toString() + " ").toString().toByteArray())
-                                "-" -> out!!.write((restar(numero1, numero2).toString() + " ").toString().toByteArray())
-                                "/" -> out!!.write((dividir(numero1, numero2).toString() + " ").toString().toByteArray())
-                                "x" -> out!!.write((multiplicar(numero1, numero2).toString() + " ").toString().toByteArray())
+                            when (symbol) {
+                                "+" -> Companion.exit!!.write((addition(number1, number2).toString() + " ").toByteArray())
+                                "-" -> Companion.exit!!.write((subtract(number1, number2).toString() + " ").toByteArray())
+                                "/" -> Companion.exit!!.write((division(number1, number2).toString() + " ").toByteArray())
+                                "x" -> Companion.exit!!.write((multiplication(number1, number2).toString() + " ").toByteArray())
                             }
                         }
                     }
-                } catch (e: IOException) {
-                    println("Error al procesar la solicitud")
-                }
 
             }
         }
 
-        fun sumar(n1: Float, n2: Float): Float {
+        private fun addition(n1: Float, n2: Float): Float {
             return n1 + n2
         }
 
-        fun restar(n1: Float, n2: Float): Float {
+        private fun subtract(n1: Float, n2: Float): Float {
             return n1 - n2
         }
 
-        fun dividir(n1: Float, n2: Float): Float {
+        private fun division(n1: Float, n2: Float): Float {
             return n1 / n2
         }
 
-        fun multiplicar(n1: Float, n2: Float): Float {
+        private fun multiplication(n1: Float, n2: Float): Float {
             return n1 * n2
         }
-    }
+
+
+}
 
 
 

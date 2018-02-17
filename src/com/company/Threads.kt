@@ -1,9 +1,8 @@
 package com.company
 
-
 /**
  *
- * @author pablo
+ * @author Pablo
  */
 class Threads(private val ID: String) : Thread() {
 
@@ -14,7 +13,7 @@ class Threads(private val ID: String) : Thread() {
         when (ID) {
             "SERVER" -> {
                 server = ServerTCP()
-                server!!.servir()
+                server!!.respond()
             }
             "CLIENT" -> {
                 ui = Interface()

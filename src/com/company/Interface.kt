@@ -3,10 +3,8 @@ package com.company
 
 import java.awt.Color
 import java.awt.Font
-import java.awt.List
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
-import java.util.ArrayList
 import java.util.Arrays
 import javax.swing.*
 import javax.swing.SwingConstants.RIGHT
@@ -32,7 +30,7 @@ class Interface : JFrame() {
     private var btn8: JButton? = null
     private var btn9: JButton? = null
     private var btnAddition: JButton? = null
-    private var btnSubstract: JButton? = null
+    private var btnSubtract: JButton? = null
     private var btnDivision: JButton? = null
     private var btnMultiplication: JButton? = null
     private var btnAC: JButton? = null
@@ -125,11 +123,11 @@ class Interface : JFrame() {
         btn6!!.addActionListener(ButtonListener())
         add(btn6)
 
-        btnSubstract = JButton("-")
-        btnSubstract!!.setBounds(150, 150, 50, 50)
-        btnSubstract!!.addActionListener(ButtonListener())
-        btnSubstract!!.background = java.awt.Color.orange
-        add(btnSubstract)
+        btnSubtract = JButton("-")
+        btnSubtract!!.setBounds(150, 150, 50, 50)
+        btnSubtract!!.addActionListener(ButtonListener())
+        btnSubtract!!.background = java.awt.Color.orange
+        add(btnSubtract)
 
 
         // ---- ROW 4 -->> [1,2,3,+] ----//
@@ -323,7 +321,7 @@ class Interface : JFrame() {
     fun calcular(op: String): String {
         client = ClientTCP()
         println(op.toString())
-        return client!!.comunication(op)
+        return client!!.communication(op)
 
     }
 
